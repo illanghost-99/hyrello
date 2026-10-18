@@ -4,11 +4,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await Supabase.initialize(
-    url: 'https://aomyrjehryeouplkzhwi.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvbXlyamVocnllb3VwbGt6aHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDMwMjcsImV4cCI6MjEwNzQ3OTAyN30.7SOPYu4zurfH2M_sPjB1EMbxDoloE0Jam5hY4FBAxcg',
-  );
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {}
+  try {
+    await Supabase.initialize(
+      url: 'https://aomyrjehryeouplkzhwi.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvbXlyamVocnllb3VwbGt6aHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDMwMjcsImV4cCI6MjEwNzQ3OTAyN30.7SOPYu4zurfH2M_sPjB1EMbxDoloE0Jam5hY4FBAxcg',
+    );
+  } catch (_) {}
   runApp(const MyApp());
 }
 
@@ -41,6 +45,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -70,9 +75,7 @@ class StartScreen extends StatelessWidget {
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  onPressed: () {
-                    // TODO: Navigera till gratis flöde (karta/lista)
-                  },
+                  onPressed: () {},
                   child: const Text('Hyra en expert', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 ),
               ),
@@ -86,9 +89,7 @@ class StartScreen extends StatelessWidget {
                     foregroundColor: const Color(0xFFD4AF37),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  onPressed: () {
-                    // TODO: Navigera till abonnemang 149 kr/mån
-                  },
+                  onPressed: () {},
                   child: const Text('Hyra ut mina tjänster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 ),
               ),
