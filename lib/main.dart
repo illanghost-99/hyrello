@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -110,6 +112,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   int _step = 0;
   final _formKey = GlobalKey<FormState>();
+  File? _profileImage;
 
   final _email = TextEditingController();
   final _password = TextEditingController();
@@ -125,6 +128,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final List<String> _interests = [];
   final List<String> _availableInterests = ['Juridik', 'Mäklare', 'Frisör', 'Veterinär', 'Läkare', 'Hantverk', 'IT', 'Ekonomi'];
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() => _profileImage = File(picked.path));
+    }
+  }
 
   void _next() {
     if (_step < 2) {
@@ -195,8 +206,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 8),
         const Text('Ladda upp foto på dig (person, inte objekt)', style: TextStyle(color: Colors.white70)),
         const SizedBox(height: 8),
+        if (_profileImage != null)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(_profileImage!, height: 120, width: 120, fit: BoxFit.cover),
+          ),
         OutlinedButton.icon(
-          onPressed: () {},
+          onPressed: _pickImage,
           icon: const Icon(Icons.camera_alt, color: Color(0xFFD4AF37)),
           label: const Text('Välj foto', style: TextStyle(color: Color(0xFFD4AF37))),
         ),
@@ -320,15 +336,15 @@ class HomeScreen extends StatelessWidget {
         children: [
           const Text('Experter i närheten', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
-          _expertCard(context, 'Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.'),
-          _expertCard(context, 'Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.'),
-          _expertCard(context, 'Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.'),
+          _expertCard(context, 'Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.', 4.9),
+          _expertCard(context, 'Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.', 4.7),
+          _expertCard(context, 'Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.', 4.8),
         ],
       ),
     );
   }
 
-  Widget _expertCard(BuildContext context, String name, String title, String price, String desc) {
+  Widget _expertCard(BuildContext context, String name, String title, String price, String desc, double rating) {
     return Card(
       color: const Color(0xFF1A1A1A),
       margin: const EdgeInsets.only(bottom: 12),
@@ -338,9 +354,15 @@ class HomeScreen extends StatelessWidget {
         title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('$title · $price\n$desc', style: const TextStyle(color: Colors.white70)),
         isThreeLine: true,
-        trailing: const Icon(Icons.chevron_right, color: Color(0xFFD4AF37)),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.star, color: Color(0xFFD4AF37), size: 16),
+            Text(' $rating', style: const TextStyle(color: Colors.white70)),
+          ],
+        ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(name: name, title: title, price: price, desc: desc)));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(name: name, title: title, price: price, desc: desc, rating: rating)));
         },
       ),
     );
@@ -349,7 +371,8 @@ class HomeScreen extends StatelessWidget {
 
 class ExpertDetailScreen extends StatelessWidget {
   final String name, title, price, desc;
-  const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc});
+  final double rating;
+  const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc, required this.rating});
 
   @override
   Widget build(BuildContext context) {
@@ -368,9 +391,21 @@ class ExpertDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(title, style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
             const SizedBox(height: 8),
-            Text(price, style: const TextStyle(fontSize: 16)),
+            Row(
+              children: [
+                Text(price, style: const TextStyle(fontSize: 16)),
+                const SizedBox(width: 12),
+                const Icon(Icons.star, color: Color(0xFFD4AF37), size: 18),
+                Text(' $rating', style: const TextStyle(fontSize: 16)),
+              ],
+            ),
             const SizedBox(height: 16),
             Text(desc, style: const TextStyle(color: Colors.white70)),
+            const SizedBox(height: 24),
+            const Text('Recensioner', style: TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            const Text('“Mycket professionell och tydlig.” — 5★', style: TextStyle(color: Colors.white70)),
+            const Text('“Snabb och trevlig hjälp.” — 4★', style: TextStyle(color: Colors.white70)),
             const Spacer(),
             SizedBox(
               width: double.infinity,
@@ -408,16 +443,34 @@ class ExpertDetailScreen extends StatelessWidget {
   }
 }
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final String name;
   const ChatScreen({super.key, required this.name});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final _controller = TextEditingController();
+  final List<Map<String, String>> _messages = [
+    {'from': 'expert', 'text': 'Hej! Hur kan jag hjälpa dig?'},
+  ];
+
+  void _send() {
+    if (_controller.text.trim().isEmpty) return;
+    setState(() {
+      _messages.add({'from': 'me', 'text': _controller.text.trim()});
+      _controller.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: Text(name, style: const TextStyle(color: Color(0xFFD4AF37))),
+        title: Text(widget.name, style: const TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(icon: const Icon(Icons.phone, color: Color(0xFFD4AF37)), onPressed: () {}),
@@ -425,13 +478,35 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const Expanded(child: Center(child: Text('Chat med expert', style: TextStyle(color: Colors.white70)))),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (ctx, i) {
+                final m = _messages[i];
+                final isMe = m['from'] == 'me';
+                return Align(
+                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isMe ? const Color(0xFFD4AF37) : const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(m['text']!, style: TextStyle(color: isMe ? Colors.black : Colors.white)),
+                  ),
+                );
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _controller,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Skriv ett meddelande...',
@@ -439,10 +514,11 @@ class ChatScreen extends StatelessWidget {
                       fillColor: const Color(0xFF1A1A1A),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
                     ),
+                    onSubmitted: (_) => _send(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(icon: const Icon(Icons.send, color: Color(0xFFD4AF37)), onPressed: () {}),
+                IconButton(icon: const Icon(Icons.send, color: Color(0xFFD4AF37)), onPressed: _send),
               ],
             ),
           ),
@@ -479,8 +555,16 @@ class MapScreen extends StatelessWidget {
   }
 }
 
-class ListScreen extends StatelessWidget {
+class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
+
+  @override
+  State<ListScreen> createState() => _ListScreenState();
+}
+
+class _ListScreenState extends State<ListScreen> {
+  String _filter = 'Alla';
+  final List<String> _filters = ['Alla', 'Juridik', 'Mäklare', 'Frisör'];
 
   @override
   Widget build(BuildContext context) {
@@ -490,7 +574,32 @@ class ListScreen extends StatelessWidget {
         title: const Text('Lista', style: TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
       ),
-      body: const Center(child: Text('Filtrerbar lista över experter', style: TextStyle(color: Colors.white70))),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: _filters.map((f) {
+                final selected = _filter == f;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(f),
+                    selected: selected,
+                    selectedColor: const Color(0xFFD4AF37),
+                    onSelected: (_) => setState(() => _filter = f),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const Expanded(
+            child: Center(child: Text('Filtrerad lista över experter', style: TextStyle(color: Colors.white70))),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -534,7 +643,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               if (controller.text == '19461') {
                 Navigator.pop(ctx);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDebugScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
               }
             },
             child: const Text('OK'),
@@ -577,38 +686,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class AdminDebugScreen extends StatelessWidget {
-  const AdminDebugScreen({super.key});
+class AdminScreen extends StatelessWidget {
+  const AdminScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final firebaseOk = Firebase.apps.isNotEmpty;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
-      appBar: AppBar(title: const Text('Admin / Felsökning', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _statusRow('Firebase', firebaseOk),
-            const SizedBox(height: 16),
-            _statusRow('Supabase', true),
-            const SizedBox(height: 32),
-            const Text('Detta konto är nu admin.', style: TextStyle(color: Colors.white70)),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text('Admin', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _adminTile('Väntande godkännanden', '2 experter', Icons.pending),
+          _adminTile('Ärenden / Rapporter', '1 ny', Icons.report),
+          _adminTile('Alla konton', 'Visa', Icons.people),
+          _adminTile('Felsökning', 'Firebase & Supabase', Icons.bug_report),
+        ],
       ),
     );
   }
 
-  Widget _statusRow(String name, bool ok) {
-    return Row(
-      children: [
-        Icon(ok ? Icons.check_circle : Icons.error, color: ok ? Colors.green : Colors.red),
-        const SizedBox(width: 12),
-        Text('$name: ${ok ? 'Kopplad' : 'Ej kopplad'}', style: const TextStyle(color: Colors.white, fontSize: 16)),
-      ],
+  Widget _adminTile(String title, String subtitle, IconData icon) {
+    return Card(
+      color: const Color(0xFF1A1A1A),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: Icon(icon, color: const Color(0xFFD4AF37)),
+        title: Text(title),
+        subtitle: Text(subtitle, style: const TextStyle(color: Colors.white70)),
+        trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+        onTap: () {},
+      ),
     );
   }
 }
