@@ -39,17 +39,123 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class StartScreen extends StatefulWidget {
+class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
 
   @override
-  State<StartScreen> createState() => _StartScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Hyrello',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFD4AF37),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Hitta eller hyra ut expertis',
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+              const SizedBox(height: 80),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD4AF37),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+                  },
+                  child: const Text('Hyra en expert', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFD4AF37)),
+                    foregroundColor: const Color(0xFFD4AF37),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+                  },
+                  child: const Text('Hyra ut mina tjänster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text('149 kr/mån', style: TextStyle(color: Colors.white54, fontSize: 13)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _StartScreenState extends State<StartScreen> {
+class MainAppScreen extends StatefulWidget {
+  const MainAppScreen({super.key});
+
+  @override
+  State<MainAppScreen> createState() => _MainAppScreenState();
+}
+
+class _MainAppScreenState extends State<MainAppScreen> {
+  int _index = 3; // Start on Profile for now
+
+  final _screens = const [
+    Center(child: Text('Hem', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Karta', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Lista', style: TextStyle(color: Colors.white))),
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      body: _screens[_index],
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: const Color(0xFF1A1A1A),
+        indicatorColor: const Color(0xFFD4AF37).withOpacity(0.2),
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Hem'),
+          NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Karta'),
+          NavigationDestination(icon: Icon(Icons.list_outlined), label: 'Lista'),
+          NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profil'),
+        ],
+      ),
+    );
+  }
+}
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   int _tapCount = 0;
 
-  void _onLogoTap() {
+  void _onHyrelloTap() {
     setState(() => _tapCount++);
     if (_tapCount >= 7) {
       _tapCount = 0;
@@ -93,59 +199,24 @@ class _StartScreenState extends State<StartScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: _onLogoTap,
-                child: const Text(
+        child: Column(
+          children: [
+            const Expanded(
+              child: Center(
+                child: Text('Din profil', style: TextStyle(color: Colors.white, fontSize: 20)),
+              ),
+            ),
+            GestureDetector(
+              onTap: _onHyrelloTap,
+              child: const Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(
                   'Hyrello',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFD4AF37),
-                  ),
+                  style: TextStyle(color: Colors.white38, fontSize: 14),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Hitta eller hyra ut expertis',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-              const SizedBox(height: 80),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD4AF37),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () {},
-                  child: const Text('Hyra en expert', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFD4AF37)),
-                    foregroundColor: const Color(0xFFD4AF37),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () {},
-                  child: const Text('Hyra ut mina tjänster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text('149 kr/mån', style: TextStyle(color: Colors.white54, fontSize: 13)),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -158,7 +229,6 @@ class AdminDebugScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseOk = Firebase.apps.isNotEmpty;
-    final supabaseOk = Supabase.instance.client.auth.currentSession != null || true;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -175,7 +245,7 @@ class AdminDebugScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _statusRow('Supabase', true),
             const SizedBox(height: 32),
-            const Text('Tryck 7 gånger på logotypen på startskärmen för att komma hit.', style: TextStyle(color: Colors.white54)),
+            const Text('Detta konto är nu admin.', style: TextStyle(color: Colors.white70)),
           ],
         ),
       ),
