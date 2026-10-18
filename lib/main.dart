@@ -111,21 +111,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   int _step = 0;
   final _formKey = GlobalKey<FormState>();
 
-  // Step 1
   final _email = TextEditingController();
   final _password = TextEditingController();
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
   final _phone = TextEditingController();
 
-  // Step 2
   final _description = TextEditingController();
   final _experience = TextEditingController();
   final _age = TextEditingController();
   final _city = TextEditingController();
   final _price = TextEditingController();
 
-  // Step 3
   final List<String> _interests = [];
   final List<String> _availableInterests = ['Juridik', 'Mäklare', 'Frisör', 'Veterinär', 'Läkare', 'Hantverk', 'IT', 'Ekonomi'];
 
@@ -133,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_step < 2) {
       setState(() => _step++);
     } else {
-      // Done
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
     }
   }
@@ -281,9 +277,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
   int _index = 0;
 
   final _screens = const [
-    Center(child: Text('Hem', style: TextStyle(color: Colors.white))),
-    Center(child: Text('Karta', style: TextStyle(color: Colors.white))),
-    Center(child: Text('Lista', style: TextStyle(color: Colors.white))),
+    HomeScreen(),
+    MapScreen(),
+    ListScreen(),
     ProfileScreen(),
   ];
 
@@ -304,6 +300,90 @@ class _MainAppScreenState extends State<MainAppScreen> {
           NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profil'),
         ],
       ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Hyrello', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text('Experter i närheten', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 12),
+          _expertCard('Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.'),
+          _expertCard('Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.'),
+          _expertCard('Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.'),
+        ],
+      ),
+    );
+  }
+
+  Widget _expertCard(String name, String title, String price, String desc) {
+    return Card(
+      color: const Color(0xFF1A1A1A),
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: const CircleAvatar(backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, color: Colors.black)),
+        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('$title · $price\n$desc', style: const TextStyle(color: Colors.white70)),
+        isThreeLine: true,
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFFD4AF37)),
+        onTap: () {},
+      ),
+    );
+  }
+}
+
+class MapScreen extends StatelessWidget {
+  const MapScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Karta', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.map, size: 100, color: const Color(0xFFD4AF37).withOpacity(0.4)),
+            const SizedBox(height: 16),
+            const Text('Live-karta kommer här', style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            const Text('Experter visas som cirklar med foto', style: TextStyle(color: Colors.white54)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ListScreen extends StatelessWidget {
+  const ListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Lista', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: const Center(child: Text('Filtrerbar lista över experter', style: TextStyle(color: Colors.white70))),
     );
   }
 }
@@ -364,7 +444,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const Expanded(child: Center(child: Text('Din profil', style: TextStyle(color: Colors.white, fontSize: 20)))),
+            const Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(radius: 40, backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, size: 40, color: Colors.black)),
+                    SizedBox(height: 16),
+                    Text('Din profil', style: TextStyle(color: Colors.white, fontSize: 20)),
+                  ],
+                ),
+              ),
+            ),
             GestureDetector(
               onTap: _onHyrelloTap,
               child: const Padding(
