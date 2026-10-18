@@ -320,15 +320,15 @@ class HomeScreen extends StatelessWidget {
         children: [
           const Text('Experter i närheten', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
-          _expertCard('Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.'),
-          _expertCard('Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.'),
-          _expertCard('Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.'),
+          _expertCard(context, 'Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.'),
+          _expertCard(context, 'Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.'),
+          _expertCard(context, 'Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.'),
         ],
       ),
     );
   }
 
-  Widget _expertCard(String name, String title, String price, String desc) {
+  Widget _expertCard(BuildContext context, String name, String title, String price, String desc) {
     return Card(
       color: const Color(0xFF1A1A1A),
       margin: const EdgeInsets.only(bottom: 12),
@@ -339,7 +339,114 @@ class HomeScreen extends StatelessWidget {
         subtitle: Text('$title · $price\n$desc', style: const TextStyle(color: Colors.white70)),
         isThreeLine: true,
         trailing: const Icon(Icons.chevron_right, color: Color(0xFFD4AF37)),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(name: name, title: title, price: price, desc: desc)));
+        },
+      ),
+    );
+  }
+}
+
+class ExpertDetailScreen extends StatelessWidget {
+  final String name, title, price, desc;
+  const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: Text(name, style: const TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const CircleAvatar(radius: 40, backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, size: 40, color: Colors.black)),
+            const SizedBox(height: 16),
+            Text(title, style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
+            const SizedBox(height: 8),
+            Text(price, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            Text(desc, style: const TextStyle(color: Colors.white70)),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      backgroundColor: const Color(0xFF1A1A1A),
+                      title: const Text('Samtycke', style: TextStyle(color: Color(0xFFD4AF37))),
+                      content: const Text('Jag godkänner att inte missbruka expertens kontaktuppgifter eller trakassera. Hyrello kan användas som bevis vid polisanmälan.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Avbryt')),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(name: name)));
+                          },
+                          child: const Text('Godkänn & skriv'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: Text('Skriv till $name'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ChatScreen extends StatelessWidget {
+  final String name;
+  const ChatScreen({super.key, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: Text(name, style: const TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(icon: const Icon(Icons.phone, color: Color(0xFFD4AF37)), onPressed: () {}),
+        ],
+      ),
+      body: Column(
+        children: [
+          const Expanded(child: Center(child: Text('Chat med expert', style: TextStyle(color: Colors.white70)))),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Skriv ett meddelande...',
+                      filled: true,
+                      fillColor: const Color(0xFF1A1A1A),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(icon: const Icon(Icons.send, color: Color(0xFFD4AF37)), onPressed: () {}),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
