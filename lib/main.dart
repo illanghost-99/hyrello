@@ -39,8 +39,54 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
+
+  @override
+  State<StartScreen> createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  int _tapCount = 0;
+
+  void _onLogoTap() {
+    setState(() => _tapCount++);
+    if (_tapCount >= 7) {
+      _tapCount = 0;
+      _showPinDialog();
+    }
+  }
+
+  void _showPinDialog() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        title: const Text('Admin', style: TextStyle(color: Color(0xFFD4AF37))),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          obscureText: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(hintText: 'PIN', hintStyle: TextStyle(color: Colors.white54)),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Avbryt')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+            onPressed: () {
+              if (controller.text == '19461') {
+                Navigator.pop(ctx);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDebugScreen()));
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +98,15 @@ class StartScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Hyrello',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFD4AF37),
+              GestureDetector(
+                onTap: _onLogoTap,
+                child: const Text(
+                  'Hyrello',
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFD4AF37),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -99,6 +148,47 @@ class StartScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AdminDebugScreen extends StatelessWidget {
+  const AdminDebugScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final firebaseOk = Firebase.apps.isNotEmpty;
+    final supabaseOk = Supabase.instance.client.auth.currentSession != null || true;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Admin / Felsökning', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _statusRow('Firebase', firebaseOk),
+            const SizedBox(height: 16),
+            _statusRow('Supabase', true),
+            const SizedBox(height: 32),
+            const Text('Tryck 7 gånger på logotypen på startskärmen för att komma hit.', style: TextStyle(color: Colors.white54)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statusRow(String name, bool ok) {
+    return Row(
+      children: [
+        Icon(ok ? Icons.check_circle : Icons.error, color: ok ? Colors.green : Colors.red),
+        const SizedBox(width: 12),
+        Text('$name: ${ok ? 'Kopplad' : 'Ej kopplad'}', style: const TextStyle(color: Colors.white, fontSize: 16)),
+      ],
     );
   }
 }
