@@ -52,12 +52,24 @@ class StartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background image
+          Image.asset(
+            'assets/handshake_bg.png',
+            fit: BoxFit.cover,
+          ),
+          // Dark overlay so text stays readable
+          Container(
+            color: Colors.black.withOpacity(0.55),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               // Logo
               Container(
                 width: 110,
@@ -100,9 +112,11 @@ class StartScreen extends StatelessWidget {
               _bigButton(context, "Hyra ut mina tjänster", true, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: true)))),
               const SizedBox(height: 8),
               const Text("149 kr/mån", style: TextStyle(color: Colors.white54, fontSize: 13)),
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
