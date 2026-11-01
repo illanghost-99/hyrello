@@ -829,7 +829,8 @@ class _MapScreenState extends State<MapScreen> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png',
+            urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            subdomains: const ['a', 'b', 'c', 'd'],
             userAgentPackageName: 'se.HC.hyrello',
           ),
           MarkerLayer(
@@ -1017,12 +1018,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 8),
           Center(child: Text(user?.email ?? '', style: const TextStyle(color: Colors.white60))),
           const SizedBox(height: 40),
-          _profileTile(Icons.edit, 'Redigera profil', () {}),
-          _profileTile(Icons.lock, 'Byt lösenord', () {}),
-          _profileTile(Icons.image, 'Byt profilbild', () {}),
-          _profileTile(Icons.support_agent, 'Support', () {}),
-          _profileTile(Icons.description, 'Användarvillkor', () {}),
-          _profileTile(Icons.privacy_tip, 'Integritetspolicy', () {}),
+          _profileTile(Icons.edit, 'Redigera profil', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redigera profil kommer snart')))),
+          _profileTile(Icons.lock, 'Byt lösenord', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Byt lösenord kommer snart')))),
+          _profileTile(Icons.image, 'Byt profilbild', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Byt profilbild kommer snart')))),
+          _profileTile(Icons.support_agent, 'Support', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Support: support@hyrello.se')))),
+          _profileTile(Icons.description, 'Användarvillkor', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Användarvillkor kommer snart')))),
+          _profileTile(Icons.privacy_tip, 'Integritetspolicy', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Integritetspolicy kommer snart')))),
           const SizedBox(height: 20),
           _profileTile(Icons.logout, 'Logga ut', () async {
             await Supabase.instance.client.auth.signOut();
