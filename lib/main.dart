@@ -259,10 +259,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       onPressed: () => Navigator.pop(context),
                       child: const Text('Avbryt', style: TextStyle(color: Colors.white54)),
                     ),
-                    if (!_available)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: Text('In-App Purchase är inte tillgängligt just nu.', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
                       ),
                   ],
                 ),
