@@ -191,7 +191,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_step < 2) {
       setState(() => _step++);
     } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+      if (widget.isExpert) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PaymentScreen()));
+      } else {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+      }
     }
   }
 
@@ -199,6 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(widget.isExpert ? 'Registrera dig som expert' : 'Registrera dig', style: const TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
@@ -213,6 +218,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Form(
                 key: _formKey,
                 child: ListView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.only(bottom: 80),
                   children: [
                     if (_step == 0) ..._step1(),
                     if (_step == 1) ..._step2(),
@@ -248,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   List<Widget> _step2() {
     if (widget.isExpert) {
       return [
-        _field(_description, 'Beskrivning om dig (200-250 tecken)', maxLines: 4),
+        _field(_description, 'Beskrivning om dig (200-250 tecken)', maxLines: 6),
         _field(_experience, 'Erfarenhet och utbildning'),
         _field(_age, 'Ålder', keyboard: TextInputType.number),
         _field(_city, 'Stad'),
@@ -327,6 +334,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
         keyboardType: keyboard,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(labelText: label, labelStyle: const TextStyle(color: Colors.white70)),
+      ),
+    );
+  }
+}
+
+
+class PaymentScreen extends StatelessWidget {
+  const PaymentScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Prenumeration', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.verified, size: 80, color: Color(0xFFD4AF37)),
+            const SizedBox(height: 24),
+            const Text('Hyrello Expert', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFFD4AF37))),
+            const SizedBox(height: 8),
+            const Text('149 kr / månad', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(height: 16),
+            const Text('Få synlighet på kartan, ta emot kunder och bygg din profil.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+                onPressed: () {
+                  // Simulate successful payment
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Betalning genomförd!')));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+                },
+                child: const Text('Betala 149 kr', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Avbryt', style: TextStyle(color: Colors.white54)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -581,6 +638,15 @@ class _ChatScreenState extends State<ChatScreen> {
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
+  // Dummy experts with positions (relative)
+  final List<Map<String, dynamic>> _experts = const [
+    {'name': 'Anna Jurist', 'role': 'Juridik', 'left': 0.2, 'top': 0.3},
+    {'name': 'Erik Mäklare', 'role': 'Mäklare', 'left': 0.6, 'top': 0.25},
+    {'name': 'Lisa Frisör', 'role': 'Frisör', 'left': 0.35, 'top': 0.55},
+    {'name': 'Johan IT', 'role': 'IT', 'left': 0.7, 'top': 0.5},
+    {'name': 'Sara Läkare', 'role': 'Läkare', 'left': 0.15, 'top': 0.7},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -589,17 +655,68 @@ class MapScreen extends StatelessWidget {
         title: const Text('Karta', style: TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.map, size: 100, color: const Color(0xFFD4AF37).withOpacity(0.4)),
-            const SizedBox(height: 16),
-            const Text('Live-karta kommer här', style: TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            const Text('Experter visas som cirklar med foto', style: TextStyle(color: Colors.white54)),
-          ],
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              // Map background
+              Container(
+                color: const Color(0xFF1A2A3A),
+                child: Center(
+                  child: Icon(Icons.map_outlined, size: 120, color: Colors.white.withOpacity(0.08)),
+                ),
+              ),
+              // Expert bubbles
+              ..._experts.map((e) {
+                return Positioned(
+                  left: constraints.maxWidth * e['left'],
+                  top: constraints.maxHeight * e['top'],
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => ExpertDetailScreen(
+                          name: e['name'],
+                          title: e['role'],
+                          price: 'Från 450 kr/h',
+                          desc: 'Erfaren specialist inom ' + e['role'] + '. Kontakta för mer info.',
+                          rating: 4.8,
+                        ),
+                      ));
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFD4AF37), width: 3),
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 8)],
+                          ),
+                          child: ClipOval(
+                            child: Container(
+                              color: const Color(0xFF2A2A2A),
+                              child: const Icon(Icons.person, color: Colors.white70, size: 32),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(e['name'].split(' ')[0], style: const TextStyle(color: Colors.white, fontSize: 11)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          );
+        },
       ),
     );
   }
