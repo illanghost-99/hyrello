@@ -120,9 +120,9 @@ class StartScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(height: 60),
-              _bigButton(context, "Hyra en expert", false, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: false)))),
+              _bigButton(context, "Hyra en expert", false, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthChoiceScreen(isExpert: false)))),
               const SizedBox(height: 16),
-              _bigButton(context, "Hyra ut mina tjänster", true, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
+              _bigButton(context, "Hyra ut mina tjänster", true, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthChoiceScreen(isExpert: true)))),
               const SizedBox(height: 8),
               const Text("149 kr/mån", style: TextStyle(color: Colors.white54, fontSize: 13)),
                 ],
@@ -287,6 +287,71 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+
+class AuthChoiceScreen extends StatelessWidget {
+  final bool isExpert;
+  const AuthChoiceScreen({super.key, required this.isExpert});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Konto', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Logga in eller skapa konto', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                // Apple Sign In placeholder
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logga in med Apple kommer snart')));
+              },
+              icon: const Icon(Icons.apple),
+              label: const Text('Logga in med Apple'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD4AF37),
+                foregroundColor: Colors.black,
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                if (isExpert) {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: false)));
+                }
+              },
+              child: const Text('Skapa konto med e-post'),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logga in med e-post kommer snart')));
+              },
+              child: const Text('Har du redan konto? Logga in', style: TextStyle(color: Color(0xFFD4AF37))),
+            ),
+          ],
+        ),
       ),
     );
   }
