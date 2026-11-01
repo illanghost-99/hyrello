@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -366,11 +368,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   List<Widget> _step1() => [
-    _field(_email, 'E-post'),
+    _field(_email, 'E-post', keyboard: TextInputType.emailAddress),
     _field(_password, 'Lösenord', obscure: true),
     _field(_firstName, 'Förnamn'),
     _field(_lastName, 'Efternamn'),
-    _field(_phone, 'Telefonnummer'),
+    _field(_phone, 'Telefonnummer (+46...)', keyboard: TextInputType.phone),
   ];
 
   List<Widget> _step2() {
@@ -756,16 +758,23 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-class MapScreen extends StatelessWidget {
+class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
-  // Dummy experts with positions (relative)
-  final List<Map<String, dynamic>> _experts = const [
-    {'name': 'Anna Jurist', 'role': 'Juridik', 'left': 0.2, 'top': 0.3},
-    {'name': 'Erik Mäklare', 'role': 'Mäklare', 'left': 0.6, 'top': 0.25},
-    {'name': 'Lisa Frisör', 'role': 'Frisör', 'left': 0.35, 'top': 0.55},
-    {'name': 'Johan IT', 'role': 'IT', 'left': 0.7, 'top': 0.5},
-    {'name': 'Sara Läkare', 'role': 'Läkare', 'left': 0.15, 'top': 0.7},
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  final MapController _mapController = MapController();
+
+  // Dummy experts with Stockholm-area positions
+  final List<Map<String, dynamic>> _experts = [
+    {'name': 'Anna Jurist', 'role': 'Juridik', 'lat': 59.334, 'lng': 18.063, 'image': 'https://i.pravatar.cc/150?img=1'},
+    {'name': 'Erik Mäklare', 'role': 'Mäklare', 'lat': 59.329, 'lng': 18.068, 'image': 'https://i.pravatar.cc/150?img=3'},
+    {'name': 'Lisa Frisör', 'role': 'Frisör', 'lat': 59.338, 'lng': 18.055, 'image': 'https://i.pravatar.cc/150?img=5'},
+    {'name': 'Johan IT', 'role': 'IT', 'lat': 59.325, 'lng': 18.072, 'image': 'https://i.pravatar.cc/150?img=8'},
+    {'name': 'Sara Läkare', 'role': 'Läkare', 'lat': 59.340, 'lng': 18.050, 'image': 'https://i.pravatar.cc/150?img=9'},
   ];
 
   @override
@@ -776,68 +785,72 @@ class MapScreen extends StatelessWidget {
         title: const Text('Karta', style: TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
-            children: [
-              // Map background
-              Container(
-                color: const Color(0xFF1A2A3A),
-                child: Center(
-                  child: Icon(Icons.map_outlined, size: 120, color: Colors.white.withOpacity(0.08)),
-                ),
-              ),
-              // Expert bubbles
-              ..._experts.map((e) {
-                return Positioned(
-                  left: constraints.maxWidth * e['left'],
-                  top: constraints.maxHeight * e['top'],
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (_) => ExpertDetailScreen(
-                          name: e['name'],
-                          title: e['role'],
-                          price: 'Från 450 kr/h',
-                          desc: 'Erfaren specialist inom ' + e['role'] + '. Kontakta för mer info.',
-                          rating: 4.8,
+      body: FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          initialCenter: const LatLng(59.3293, 18.0686), // Stockholm
+          initialZoom: 13.5,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'se.HC.hyrello',
+          ),
+          MarkerLayer(
+            markers: _experts.map((e) {
+              return Marker(
+                point: LatLng(e['lat'], e['lng']),
+                width: 70,
+                height: 90,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => ExpertDetailScreen(
+                        name: e['name'],
+                        title: e['role'],
+                        price: 'Från 450 kr/h',
+                        desc: 'Erfaren specialist inom ' + e['role'] + '.',
+                        rating: 4.8,
+                      ),
+                    ));
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFFD4AF37), width: 3),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6)],
                         ),
-                      ));
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFFD4AF37), width: 3),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 8)],
-                          ),
-                          child: ClipOval(
-                            child: Container(
-                              color: const Color(0xFF2A2A2A),
-                              child: const Icon(Icons.person, color: Colors.white70, size: 32),
-                            ),
+                        child: ClipOval(
+                          child: Image.network(
+                            e['image'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white70),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(e['name'].split(' ')[0], style: const TextStyle(color: Colors.white, fontSize: 11)),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
-                    ),
+                        child: Text(
+                          e['name'].split(' ')[0],
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              }),
-            ],
-          );
-        },
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
