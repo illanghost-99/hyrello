@@ -55,15 +55,8 @@ class StartScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image
-          Image.asset(
-            'assets/handshake_bg.png',
-            fit: BoxFit.cover,
-          ),
-          // Dark overlay so text stays readable
-          Container(
-            color: Colors.black.withOpacity(0.55),
-          ),
+          // Solid dark background (image removed for now)
+          Container(color: const Color(0xFF0A0A0A)),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
