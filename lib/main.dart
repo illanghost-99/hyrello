@@ -293,14 +293,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _next() {
+  Future<void> _next() async {
     if (_step < 2) {
       setState(() => _step++);
     } else {
-      if (widget.isExpert) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PaymentScreen()));
-      } else {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+      try {
+        final response = await Supabase.instance.client.auth.signUp(
+          email: _email.text.trim(),
+          password: _password.text,
+          data: {
+            'first_name': _firstName.text.trim(),
+            'last_name': _lastName.text.trim(),
+            'phone': _phone.text.trim(),
+            'is_expert': widget.isExpert,
+          },
+        );
+        if (response.user != null && mounted) {
+          if (widget.isExpert) {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PaymentScreen()));
+          } else {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kunde inte skapa konto: $e')));
+        }
       }
     }
   }
