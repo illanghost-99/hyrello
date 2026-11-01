@@ -194,6 +194,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       setState(() {
         _available = false;
         _loading = false;
+        _error = 'Betalningar är inte tillgängliga på den här enheten';
       });
       return;
     }
@@ -205,6 +206,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       _available = true;
       _products = response.productDetails;
       _loading = false;
+      if (_products.isEmpty) {
+        _error = 'Prenumerationen kunde inte hämtas. Kontrollera App Store Connect.';
+      }
+    });
+
+    // Listen for purchase updates
+    _iap.purchaseStream.listen((purchases) {
+      for (final purchase in purchases) {
+        if (purchase.status == PurchaseStatus.purchased || purchase.status == PurchaseStatus.restored) {
+          _iap.completePurchase(purchase);
+          if (mounted) {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: true)));
+          }
+        } else if (purchase.status == PurchaseStatus.error) {
+          setState(() => _error = purchase.error?.message ?? 'Köpet misslyckades');
+        }
+      }
     });
   }
 
@@ -223,12 +241,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _buy() async {
-    if (_products.isEmpty) return;
-    final purchaseParam = PurchaseParam(productDetails: _products.first);
-    await _iap.buyNonConsumable(purchaseParam: purchaseParam);
-    // After purchase (in real app listen to purchaseStream), go to registration
-    if (mounted) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: true)));
+    if (_products.isEmpty) {
+      setState(() => _error = 'Produkten är inte tillgänglig');
+      return;
+    }
+    try {
+      final purchaseParam = PurchaseParam(productDetails: _products.first);
+      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+    } catch (e) {
+      setState(() => _error = 'Kunde inte starta köp: $e');
     }
   }
 
