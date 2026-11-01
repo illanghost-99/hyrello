@@ -315,6 +315,86 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 }
 
 
+
+class LoginScreen extends StatefulWidget {
+  final bool isExpert;
+  const LoginScreen({super.key, required this.isExpert});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  bool _loading = false;
+
+  Future<void> _login() async {
+    setState(() => _loading = true);
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: _email.text.trim(),
+        password: _password.text,
+      );
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const MainAppScreen()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Inloggning misslyckades: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Logga in', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            TextField(
+              controller: _email,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(labelText: 'E-post', labelStyle: TextStyle(color: Colors.white54)),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(labelText: 'Lösenord', labelStyle: TextStyle(color: Colors.white54)),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : const Text('Logga in', style: TextStyle(fontSize: 18)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AuthChoiceScreen extends StatelessWidget {
   final bool isExpert;
   const AuthChoiceScreen({super.key, required this.isExpert});
@@ -388,7 +468,7 @@ class AuthChoiceScreen extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logga in med e-post kommer snart')));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen(isExpert: isExpert)));
               },
               child: const Text('Har du redan konto? Logga in', style: TextStyle(color: Color(0xFFD4AF37))),
             ),
