@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -340,9 +341,29 @@ class AuthChoiceScreen extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 52),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onPressed: () {
-                // Apple Sign In placeholder
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logga in med Apple kommer snart')));
+              onPressed: () async {
+                try {
+                  final credential = await SignInWithApple.getAppleIDCredential(
+                    scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+                  );
+                  if (credential.identityToken != null) {
+                    await Supabase.instance.client.auth.signInWithIdToken(
+                      provider: OAuthProvider.apple,
+                      idToken: credential.identityToken!,
+                    );
+                    if (context.mounted) {
+                      if (isExpert) {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+                      } else {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+                      }
+                    }
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Apple-inloggning misslyckades: $e')));
+                  }
+                }
               },
               icon: const Icon(Icons.apple),
               label: const Text('Logga in med Apple'),
