@@ -58,36 +58,18 @@ class StartScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Solid dark background (image removed for now)
-          Container(color: const Color(0xFF0A0A0A)),
+          Image.asset(
+            'assets/handshake_bg.png',
+            fit: BoxFit.cover,
+          ),
+          Container(color: Colors.black.withOpacity(0.45)),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-              // Logo
-              Container(
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFD4AF37).withOpacity(0.35),
-                      blurRadius: 24,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/app_icon.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
               const Text(
                 "Hyrello",
                 style: TextStyle(
