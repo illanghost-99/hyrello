@@ -43,7 +43,42 @@ class MyApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFD4AF37))),
         ),
       ),
-      home: const StartScreen(),
+      home: const AuthGate(),
+    );
+  }
+}
+
+
+class AuthGate extends StatefulWidget {
+  const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final session = Supabase.instance.client.auth.currentSession;
+    if (!mounted) return;
+    if (session != null) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainAppScreen()));
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const StartScreen()));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Color(0xFF0A0A0A),
+      body: Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37))),
     );
   }
 }
