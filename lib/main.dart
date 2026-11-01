@@ -160,6 +160,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   bool _available = false;
   List<ProductDetails> _products = [];
   bool _loading = true;
+  String? _error;
 
   // Product ID must match what you create in App Store Connect
   static const String _productId = 'hyrello_expert_monthly';
