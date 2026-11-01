@@ -188,10 +188,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     });
   }
 
+
+  Widget _benefit(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFFD4AF37), size: 22),
+          const SizedBox(width: 12),
+          Expanded(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 16))),
+        ],
+      ),
+    );
+  }
+
   Future<void> _buy() async {
     if (_products.isEmpty) return;
     final purchaseParam = PurchaseParam(productDetails: _products.first);
     await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+    // After purchase (in real app listen to purchaseStream), go to registration
+    if (mounted) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: true)));
+    }
   }
 
   @override
@@ -203,50 +221,51 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
         child: _loading
             ? const Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37)))
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.verified, size: 80, color: Color(0xFFD4AF37)),
-                  const SizedBox(height: 24),
-                  const Text('Hyrello Expert', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFFD4AF37))),
-                  const SizedBox(height: 8),
-                  const Text('149 kr / månad', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white)),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Få synlighet på kartan, ta emot kunder och bygg din profil.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD4AF37),
-                        foregroundColor: Colors.black,
-                      ),
-                      onPressed: _products.isEmpty ? null : _buy,
-                      child: Text(
-                        _products.isEmpty ? 'Produkt ej tillgänglig' : 'Prenumerera 149 kr/mån',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Icon(Icons.verified, size: 72, color: Color(0xFFD4AF37)),
+                    const SizedBox(height: 16),
+                    const Text('Hyrello Expert', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFFD4AF37))),
+                    const SizedBox(height: 4),
+                    const Text('149 kr / månad', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                    const SizedBox(height: 24),
+                    _benefit(Icons.map, 'Synlighet på kartan'),
+                    _benefit(Icons.people, 'Ta emot kunder direkt'),
+                    _benefit(Icons.star, 'Bygg din professionella profil'),
+                    _benefit(Icons.chat, 'Chatt med kunder'),
+                    _benefit(Icons.verified_user, 'Verifierad expert-badge'),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4AF37),
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: _products.isEmpty ? null : _buy,
+                        child: Text(
+                          _products.isEmpty ? 'Produkt ej tillgänglig' : 'Prenumerera 149 kr/mån',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Avbryt', style: TextStyle(color: Colors.white54)),
-                  ),
-                  if (!_available)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Text('In-App Purchase är inte tillgängligt just nu.', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Avbryt', style: TextStyle(color: Colors.white54)),
                     ),
-                ],
+                    if (!_available)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: Text('In-App Purchase är inte tillgängligt just nu.', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                      ),
+                  ],
+                ),
               ),
       ),
     );
