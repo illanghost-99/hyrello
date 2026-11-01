@@ -794,7 +794,7 @@ class _MapScreenState extends State<MapScreen> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png',
             userAgentPackageName: 'se.HC.hyrello',
           ),
           MarkerLayer(
@@ -957,33 +957,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+    final name = user?.userMetadata?['first_name'] ?? 'Användare';
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(radius: 40, backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, size: 40, color: Colors.black)),
-                    SizedBox(height: 16),
-                    Text('Din profil', style: TextStyle(color: Colors.white, fontSize: 20)),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: _onHyrelloTap,
-              child: const Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('Hyrello', style: TextStyle(color: Colors.white38, fontSize: 14)),
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text('Profil', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
       ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const SizedBox(height: 20),
+          Center(
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: const Color(0xFFD4AF37),
+              child: const Icon(Icons.person, size: 50, color: Colors.black),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(child: Text(name, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold))),
+          const SizedBox(height: 8),
+          Center(child: Text(user?.email ?? '', style: const TextStyle(color: Colors.white60))),
+          const SizedBox(height: 40),
+          _profileTile(Icons.edit, 'Redigera profil', () {}),
+          _profileTile(Icons.lock, 'Byt lösenord', () {}),
+          _profileTile(Icons.image, 'Byt profilbild', () {}),
+          _profileTile(Icons.support_agent, 'Support', () {}),
+          _profileTile(Icons.description, 'Användarvillkor', () {}),
+          _profileTile(Icons.privacy_tip, 'Integritetspolicy', () {}),
+          const SizedBox(height: 20),
+          _profileTile(Icons.logout, 'Logga ut', () async {
+            await Supabase.instance.client.auth.signOut();
+            if (mounted) Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const StartScreen()), (_) => false);
+          }, color: Colors.redAccent),
+          const SizedBox(height: 40),
+          GestureDetector(
+            onTap: _onHyrelloTap,
+            child: const Center(child: Text('Hyrello', style: TextStyle(color: Colors.white38))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _profileTile(IconData icon, String title, VoidCallback onTap, {Color color = Colors.white}) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(title, style: TextStyle(color: color)),
+      trailing: const Icon(Icons.chevron_right, color: Colors.white38),
+      onTap: onTap,
     );
   }
 }
