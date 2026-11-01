@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,7 +103,7 @@ class StartScreen extends StatelessWidget {
               const SizedBox(height: 60),
               _bigButton(context, "Hyra en expert", false, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: false)))),
               const SizedBox(height: 16),
-              _bigButton(context, "Hyra ut mina tjänster", true, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen(isExpert: true)))),
+              _bigButton(context, "Hyra ut mina tjänster", true, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
               const SizedBox(height: 8),
               const Text("149 kr/mån", style: TextStyle(color: Colors.white54, fontSize: 13)),
                 ],
@@ -140,6 +141,114 @@ class StartScreen extends StatelessWidget {
               onPressed: onPressed,
               child: Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
+    );
+  }
+}
+
+
+class SubscriptionScreen extends StatefulWidget {
+  const SubscriptionScreen({super.key});
+
+  @override
+  State<SubscriptionScreen> createState() => _SubscriptionScreenState();
+}
+
+class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  final InAppPurchase _iap = InAppPurchase.instance;
+  bool _available = false;
+  List<ProductDetails> _products = [];
+  bool _loading = true;
+
+  // Product ID must match what you create in App Store Connect
+  static const String _productId = 'hyrello_expert_monthly';
+
+  @override
+  void initState() {
+    super.initState();
+    _initStore();
+  }
+
+  Future<void> _initStore() async {
+    final available = await _iap.isAvailable();
+    if (!available) {
+      setState(() {
+        _available = false;
+        _loading = false;
+      });
+      return;
+    }
+
+    const Set<String> ids = {_productId};
+    final response = await _iap.queryProductDetails(ids);
+
+    setState(() {
+      _available = true;
+      _products = response.productDetails;
+      _loading = false;
+    });
+  }
+
+  Future<void> _buy() async {
+    if (_products.isEmpty) return;
+    final purchaseParam = PurchaseParam(productDetails: _products.first);
+    await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Prenumerera', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(32),
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37)))
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.verified, size: 80, color: Color(0xFFD4AF37)),
+                  const SizedBox(height: 24),
+                  const Text('Hyrello Expert', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFFD4AF37))),
+                  const SizedBox(height: 8),
+                  const Text('149 kr / månad', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white)),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Få synlighet på kartan, ta emot kunder och bygg din profil.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD4AF37),
+                        foregroundColor: Colors.black,
+                      ),
+                      onPressed: _products.isEmpty ? null : _buy,
+                      child: Text(
+                        _products.isEmpty ? 'Produkt ej tillgänglig' : 'Prenumerera 149 kr/mån',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Avbryt', style: TextStyle(color: Colors.white54)),
+                  ),
+                  if (!_available)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text('In-App Purchase är inte tillgängligt just nu.', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                    ),
+                ],
+              ),
+      ),
     );
   }
 }
