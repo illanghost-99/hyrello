@@ -943,13 +943,13 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: const Text('Hyrello', style: TextStyle(color: Color(0xFFD4AF37))),
+        title: const Text('Sparade', style: TextStyle(color: Color(0xFFD4AF37))),
         backgroundColor: Colors.transparent,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Experter i närheten', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          const Text('Dina sparade experter', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 12),
           _expertCard(context, 'Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.', 4.9),
           _expertCard(context, 'Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.', 4.7),
