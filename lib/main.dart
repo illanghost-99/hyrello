@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 Future<void> main() async {
@@ -665,6 +666,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             );
           }).toList(),
+            ],
         ),
       ];
     }
@@ -990,6 +992,27 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
+  LatLng? _userLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  Future<void> _getLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+    if (permission == LocationPermission.deniedForever) return;
+    final pos = await Geolocator.getCurrentPosition();
+    setState(() => _userLocation = LatLng(pos.latitude, pos.longitude));
+    _mapController.move(_userLocation!, 14);
+  }
 
   // Dummy experts with Stockholm-area positions
   final List<Map<String, dynamic>> _experts = [
@@ -1011,7 +1034,7 @@ class _MapScreenState extends State<MapScreen> {
       body: FlutterMap(
         mapController: _mapController,
         options: MapOptions(
-          initialCenter: const LatLng(59.3293, 18.0686), // Stockholm
+          initialCenter: _userLocation ?? const LatLng(59.3293, 18.0686),
           initialZoom: 13.5,
         ),
         children: [
@@ -1020,7 +1043,21 @@ class _MapScreenState extends State<MapScreen> {
             userAgentPackageName: 'se.HC.hyrello',
           ),
           MarkerLayer(
-            markers: _experts.map((e) {
+            markers: [
+              if (_userLocation != null)
+                Marker(
+                  point: _userLocation!,
+                  width: 30,
+                  height: 30,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                    ),
+                  ),
+                ),
+              ..._experts.map((e) {
               return Marker(
                 point: LatLng(e['lat'], e['lng']),
                 width: 70,
@@ -1072,6 +1109,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               );
             }).toList(),
+            ],
           ),
         ],
       ),
@@ -1117,6 +1155,7 @@ class _ListScreenState extends State<ListScreen> {
                   ),
                 );
               }).toList(),
+            ],
             ),
           ),
           const Expanded(
