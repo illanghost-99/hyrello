@@ -750,6 +750,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   final _screens = const [
     HomeScreen(),
     MapScreen(),
+    ChatScreen(),
     ListScreen(),
     ProfileScreen(),
   ];
@@ -767,8 +768,167 @@ class _MainAppScreenState extends State<MainAppScreen> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Hem'),
           NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Karta'),
+          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chatt'),
           NavigationDestination(icon: Icon(Icons.list_outlined), label: 'Lista'),
           NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profil'),
+        ],
+      ),
+    );
+  }
+}
+
+
+class ChatScreen extends StatelessWidget {
+  const ChatScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: const Text('Chatt', style: TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+      ),
+      body: ListView(
+        children: [
+          _chatTile(context, 'Anna Svensson', 'Hej! När kan du hjälpa mig?', '14:32', false),
+          _chatTile(context, 'Erik Lindberg', 'Tack för hjälpen!', 'Igår', true),
+          _chatTile(context, 'Sofia Holm', 'Kan vi boka tid?', 'Mån', false),
+        ],
+      ),
+    );
+  }
+
+  Widget _chatTile(BuildContext context, String name, String lastMsg, String time, bool read) {
+    return ListTile(
+      leading: CircleAvatar(backgroundColor: const Color(0xFFD4AF37), child: Text(name[0], style: const TextStyle(color: Colors.black))),
+      title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+      subtitle: Text(lastMsg, style: TextStyle(color: read ? Colors.white38 : Colors.white70)),
+      trailing: Text(time, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: name))),
+    );
+  }
+}
+
+class ChatDetailScreen extends StatefulWidget {
+  final String name;
+  const ChatDetailScreen({super.key, required this.name});
+
+  @override
+  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
+}
+
+class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  final _controller = TextEditingController();
+  final List<Map<String, dynamic>> _messages = [
+    {'text': 'Hej! Hur kan jag hjälpa dig?', 'mine': false, 'time': '14:30', 'status': 'read'},
+    {'text': 'Jag behöver hjälp med ett avtal.', 'mine': true, 'time': '14:31', 'status': 'read'},
+  ];
+
+  void _send() {
+    if (_controller.text.trim().isEmpty) return;
+    setState(() {
+      _messages.add({'text': _controller.text.trim(), 'mine': true, 'time': 'Nu', 'status': 'delivered'});
+      _controller.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(
+        title: Text(widget.name, style: const TextStyle(color: Color(0xFFD4AF37))),
+        backgroundColor: Colors.transparent,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (v) {
+              if (v == 'report') _showReportDialog();
+              if (v == 'block') ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Användaren är blockerad')));
+            },
+            itemBuilder: (_) => [
+              const PopupMenuItem(value: 'report', child: Text('Rapportera')),
+              const PopupMenuItem(value: 'block', child: Text('Blockera')),
+            ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (ctx, i) {
+                final m = _messages[i];
+                return Align(
+                  alignment: m['mine'] ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: m['mine'] ? const Color(0xFFD4AF37) : const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(m['text'], style: TextStyle(color: m['mine'] ? Colors.black : Colors.white)),
+                        const SizedBox(height: 4),
+                        Text(m['time'], style: TextStyle(color: m['mine'] ? Colors.black54 : Colors.white38, fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Skriv ett meddelande...',
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      filled: true,
+                      fillColor: const Color(0xFF1A1A1A),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(icon: const Icon(Icons.send, color: Color(0xFFD4AF37)), onPressed: _send),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportDialog() {
+    final reason = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        title: const Text('Rapportera', style: TextStyle(color: Color(0xFFD4AF37))),
+        content: TextField(controller: reason, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: 'Beskriv problemet')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Avbryt')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+            onPressed: () {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Rapport skickad till admin')));
+            },
+            child: const Text('Skicka'),
+          ),
         ],
       ),
     );
