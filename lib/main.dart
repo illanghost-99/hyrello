@@ -1039,7 +1039,7 @@ class ExpertDetailScreen extends StatelessWidget {
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
                           onPressed: () {
                             Navigator.pop(ctx);
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(name: name)));
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: name)));
                           },
                           child: const Text('Godkänn & skriv'),
                         ),
@@ -1058,82 +1058,6 @@ class ExpertDetailScreen extends StatelessWidget {
 }
 
 
-class _ChatScreenState extends State<ChatScreen> {
-  final _controller = TextEditingController();
-  final List<Map<String, String>> _messages = [
-    {'from': 'expert', 'text': 'Hej! Hur kan jag hjälpa dig?'},
-  ];
-
-  void _send() {
-    if (_controller.text.trim().isEmpty) return;
-    setState(() {
-      _messages.add({'from': 'me', 'text': _controller.text.trim()});
-      _controller.clear();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
-      appBar: AppBar(
-        title: Text(widget.name, style: const TextStyle(color: Color(0xFFD4AF37))),
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(icon: const Icon(Icons.phone, color: Color(0xFFD4AF37)), onPressed: () {}),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (ctx, i) {
-                final m = _messages[i];
-                final isMe = m['from'] == 'me';
-                return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: isMe ? const Color(0xFFD4AF37) : const Color(0xFF1A1A1A),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(m['text']!, style: TextStyle(color: isMe ? Colors.black : Colors.white)),
-                  ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Skriv ett meddelande...',
-                      filled: true,
-                      fillColor: const Color(0xFF1A1A1A),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
-                    ),
-                    onSubmitted: (_) => _send(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(icon: const Icon(Icons.send, color: Color(0xFFD4AF37)), onPressed: _send),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
