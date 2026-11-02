@@ -1205,12 +1205,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 8),
           Center(child: Text(user?.email ?? '', style: const TextStyle(color: Colors.white60))),
           const SizedBox(height: 40),
-          _profileTile(Icons.edit, 'Redigera profil', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redigera profil kommer snart')))),
-          _profileTile(Icons.lock, 'Byt lösenord', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Byt lösenord kommer snart')))),
-          _profileTile(Icons.image, 'Byt profilbild', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Byt profilbild kommer snart')))),
-          _profileTile(Icons.support_agent, 'Support', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Support: support@hyrello.se')))),
-          _profileTile(Icons.description, 'Användarvillkor', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Användarvillkor kommer snart')))),
-          _profileTile(Icons.privacy_tip, 'Integritetspolicy', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Integritetspolicy kommer snart')))),
+          _profileTile(Icons.edit, 'Redigera profil', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()))),
+          _profileTile(Icons.lock, 'Byt lösenord', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen()))),
+          _profileTile(Icons.image, 'Byt profilbild', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profilbild kan bytas i Redigera profil')))),
+          _profileTile(Icons.support_agent, 'Support', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen()))),
+          _profileTile(Icons.description, 'Användarvillkor', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()))),
+          _profileTile(Icons.privacy_tip, 'Integritetspolicy', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyScreen()))),
           const SizedBox(height: 20),
           _profileTile(Icons.logout, 'Logga ut', () async {
             await Supabase.instance.client.auth.signOut();
@@ -1269,6 +1269,175 @@ class AdminScreen extends StatelessWidget {
         subtitle: Text(subtitle, style: const TextStyle(color: Colors.white70)),
         trailing: const Icon(Icons.chevron_right, color: Colors.white54),
         onTap: () {},
+      ),
+    );
+  }
+}
+
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
+  bool _loading = false;
+
+  Future<void> _save() async {
+    setState(() => _loading = true);
+    try {
+      await Supabase.instance.client.auth.updateUser(UserAttributes(data: {
+        'first_name': _firstName.text.trim(),
+        'last_name': _lastName.text.trim(),
+      }));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profil uppdaterad')));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fel: \$e')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Redigera profil', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(children: [
+          TextField(controller: _firstName, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Förnamn')),
+          const SizedBox(height: 16),
+          TextField(controller: _lastName, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Efternamn')),
+          const SizedBox(height: 32),
+          SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+            onPressed: _loading ? null : _save,
+            child: _loading ? const CircularProgressIndicator() : const Text('Spara'),
+          )),
+        ]),
+      ),
+    );
+  }
+}
+
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+  @override
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final _password = TextEditingController();
+  bool _loading = false;
+
+  Future<void> _change() async {
+    setState(() => _loading = true);
+    try {
+      await Supabase.instance.client.auth.updateUser(UserAttributes(password: _password.text));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lösenord uppdaterat')));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fel: \$e')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Byt lösenord', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(children: [
+          TextField(controller: _password, obscureText: true, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Nytt lösenord')),
+          const SizedBox(height: 32),
+          SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
+            onPressed: _loading ? null : _change,
+            child: _loading ? const CircularProgressIndicator() : const Text('Uppdatera lösenord'),
+          )),
+        ]),
+      ),
+    );
+  }
+}
+
+class SupportScreen extends StatelessWidget {
+  const SupportScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Support', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Kontakta oss', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 24),
+          const Text('E-post', style: TextStyle(color: Colors.white70)),
+          const Text('support@hyrello.se', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('Telefon', style: TextStyle(color: Colors.white70)),
+          const Text('+46 70 123 45 67', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16)),
+          const SizedBox(height: 32),
+          const Text('AI-support kommer snart i en uppdatering.', style: TextStyle(color: Colors.white54)),
+        ]),
+      ),
+    );
+  }
+}
+
+class TermsScreen extends StatelessWidget {
+  const TermsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Användarvillkor', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Text(
+          'Användarvillkor för Hyrello\n\n'
+          '1. Tjänsten\nHyrello är en plattform för att hyra och erbjuda tjänster.\n\n'
+          '2. Användarkonto\nDu ansvarar för att hålla dina inloggningsuppgifter säkra.\n\n'
+          '3. Betalning\nPrenumerationer hanteras via App Store.\n\n'
+          '4. Ansvar\nHyrello ansvarar inte för tjänster som utförs av användare.\n\n'
+          '5. Uppsägning\nDu kan avsluta ditt konto när som helst.',
+          style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
+        ),
+      ),
+    );
+  }
+}
+
+class PrivacyScreen extends StatelessWidget {
+  const PrivacyScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Integritetspolicy', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Text(
+          'Integritetspolicy för Hyrello\n\n'
+          '1. Data vi samlar in\nE-post, namn och profilinformation.\n\n'
+          '2. Hur vi använder data\nFör att tillhandahålla tjänsten och förbättra upplevelsen.\n\n'
+          '3. Delning\nVi säljer inte dina uppgifter.\n\n'
+          '4. Dina rättigheter\nDu kan begära radering av ditt konto.\n\n'
+          '5. Kontakt\nsupport@hyrello.se',
+          style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
+        ),
       ),
     );
   }
