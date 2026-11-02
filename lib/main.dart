@@ -666,7 +666,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             );
           }).toList(),
-            ],
         ),
       ];
     }
@@ -1058,13 +1057,6 @@ class ExpertDetailScreen extends StatelessWidget {
   }
 }
 
-class ChatScreen extends StatefulWidget {
-  final String name;
-  const ChatScreen({super.key, required this.name});
-
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
 
 class _ChatScreenState extends State<ChatScreen> {
   final _controller = TextEditingController();
@@ -1315,7 +1307,6 @@ class _ListScreenState extends State<ListScreen> {
                   ),
                 );
               }).toList(),
-            ],
             ),
           ),
           const Expanded(
