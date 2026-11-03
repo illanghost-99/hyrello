@@ -1363,26 +1363,113 @@ class AdminScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _adminTile('Väntande godkännanden', '2 experter', Icons.pending),
-          _adminTile('Ärenden / Rapporter', '1 ny', Icons.report),
-          _adminTile('Alla konton', 'Visa', Icons.people),
-          _adminTile('Felsökning', 'Firebase & Supabase', Icons.bug_report),
+          _adminTile(context, 'Väntande godkännanden', '2 experter', Icons.pending, const PendingApprovalsScreen()),
+          _adminTile(context, 'Ärenden / Rapporter', '1 ny', Icons.report, const ReportsScreen()),
+          _adminTile(context, 'Alla konton', 'Visa', Icons.people, const AllAccountsScreen()),
+          _adminTile(context, 'Felsökning', 'Firebase & Supabase', Icons.bug_report, const DebugScreen()),
         ],
       ),
     );
   }
 
-  Widget _adminTile(String title, String subtitle, IconData icon) {
+  Widget _adminTile(BuildContext context, String title, String subtitle, IconData icon, Widget screen) {
     return Card(
       color: const Color(0xFF1A1A1A),
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: Icon(icon, color: const Color(0xFFD4AF37)),
-        title: Text(title),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
         subtitle: Text(subtitle, style: const TextStyle(color: Colors.white70)),
         trailing: const Icon(Icons.chevron_right, color: Colors.white54),
-        onTap: () {},
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => screen)),
       ),
+    );
+  }
+}
+
+class PendingApprovalsScreen extends StatelessWidget {
+  const PendingApprovalsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Väntande', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: ListView(padding: const EdgeInsets.all(16), children: [
+        _item(context, 'Anna Svensson', 'Advokat'),
+        _item(context, 'Erik Lindberg', 'Mäklare'),
+      ]),
+    );
+  }
+  Widget _item(BuildContext ctx, String name, String role) {
+    return Card(color: const Color(0xFF1A1A1A), margin: const EdgeInsets.only(bottom: 12), child: ListTile(
+      title: Text(name, style: const TextStyle(color: Colors.white)),
+      subtitle: Text(role, style: const TextStyle(color: Colors.white70)),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        IconButton(icon: const Icon(Icons.check, color: Colors.green), onPressed: () => ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('\$name godkänd')))),
+        IconButton(icon: const Icon(Icons.close, color: Colors.red), onPressed: () => ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('\$name nekad')))),
+      ]),
+    ));
+  }
+}
+
+class ReportsScreen extends StatelessWidget {
+  const ReportsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Rapporter', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: ListView(padding: const EdgeInsets.all(16), children: [
+        Card(color: const Color(0xFF1A1A1A), child: ListTile(
+          title: const Text('Rapport mot Erik', style: TextStyle(color: Colors.white)),
+          subtitle: const Text('Olämpligt beteende', style: TextStyle(color: Colors.white70)),
+          trailing: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black), onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ärende markerat som löst'))), child: const Text('Lös')),
+        )),
+      ]),
+    );
+  }
+}
+
+class AllAccountsScreen extends StatelessWidget {
+  const AllAccountsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Alla konton', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: ListView(padding: const EdgeInsets.all(16), children: [
+        _account(context, 'Anna Svensson', 'Utbildad', true),
+        _account(context, 'Johan Karlsson', 'Kund', false),
+        _account(context, 'Sofia Holm', 'Utbildad', true),
+      ]),
+    );
+  }
+  Widget _account(BuildContext ctx, String name, String type, bool verified) {
+    return Card(color: const Color(0xFF1A1A1A), margin: const EdgeInsets.only(bottom: 12), child: ListTile(
+      title: Row(children: [Text(name, style: const TextStyle(color: Colors.white)), if (verified) const Padding(padding: EdgeInsets.only(left: 6), child: Icon(Icons.verified, color: Color(0xFFD4AF37), size: 16))]),
+      subtitle: Text(type, style: const TextStyle(color: Colors.white70)),
+      trailing: PopupMenuButton(icon: const Icon(Icons.more_vert, color: Colors.white54), itemBuilder: (_) => [
+        const PopupMenuItem(value: 'verify', child: Text('Verifiera')),
+        const PopupMenuItem(value: 'suspend', child: Text('Stäng av')),
+      ], onSelected: (v) => ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('\$name: \$v')))),
+    ));
+  }
+}
+
+class DebugScreen extends StatelessWidget {
+  const DebugScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(title: const Text('Felsökning', style: TextStyle(color: Color(0xFFD4AF37))), backgroundColor: Colors.transparent),
+      body: Padding(padding: const EdgeInsets.all(24), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Supabase', style: TextStyle(color: Colors.white, fontSize: 18)),
+        const Text('Ansluten', style: TextStyle(color: Colors.green)),
+        const SizedBox(height: 16),
+        const Text('Firebase', style: TextStyle(color: Colors.white, fontSize: 18)),
+        const Text('Konfigurerad', style: TextStyle(color: Colors.green)),
+      ])),
     );
   }
 }
