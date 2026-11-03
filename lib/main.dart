@@ -1205,15 +1205,27 @@ class _MapScreenState extends State<MapScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: const Color(0xFFD4AF37), width: 3),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6)],
-                        ),
-                        child: ClipOval(
-                          child: Image.network(
-                            e['image'],
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white70),
+                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6)],
+                            ),
+                            child: ClipOval(
+                              child: Image.network(
+                                e['image'],
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white70),
+                              ),
+                            ),
                           ),
-                        ),
+                          if (e['verified'] == true)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(color: Color(0xFFD4AF37), shape: BoxShape.circle),
+                                child: const Icon(Icons.verified, size: 14, color: Colors.black),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Container(
