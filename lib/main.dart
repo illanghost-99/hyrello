@@ -256,35 +256,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -384,35 +355,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -460,35 +402,6 @@ class AuthChoiceScreen extends StatelessWidget {
   final bool isExpert;
   const AuthChoiceScreen({super.key, required this.isExpert});
 
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -781,35 +694,6 @@ class PaymentScreen extends StatelessWidget {
   const PaymentScreen({super.key});
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -901,35 +785,6 @@ class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -982,35 +837,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     });
   }
 
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1118,35 +944,6 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1198,35 +995,6 @@ class ExpertDetailScreen extends StatelessWidget {
   final double rating;
   const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc, required this.rating});
 
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1484,35 +1252,6 @@ class _ListScreenState extends State<ListScreen> {
   final List<String> _filters = ['Alla', 'Juridik', 'Mäklare', 'Frisör'];
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1662,35 +1401,6 @@ class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1729,35 +1439,6 @@ class AdminScreen extends StatelessWidget {
 class PendingApprovalsScreen extends StatelessWidget {
   const PendingApprovalsScreen({super.key});
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1784,35 +1465,6 @@ class PendingApprovalsScreen extends StatelessWidget {
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1831,35 +1483,6 @@ class ReportsScreen extends StatelessWidget {
 
 class AllAccountsScreen extends StatelessWidget {
   const AllAccountsScreen({super.key});
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1887,35 +1510,6 @@ class AllAccountsScreen extends StatelessWidget {
 
 class DebugScreen extends StatelessWidget {
   const DebugScreen({super.key});
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1962,35 +1556,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -2041,35 +1606,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -2093,35 +1629,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -2149,35 +1656,6 @@ class SupportScreen extends StatelessWidget {
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
 
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -2201,35 +1679,6 @@ class TermsScreen extends StatelessWidget {
 
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
-
-  void _showFilter() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filtrera yrke', style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'].map((r) => ChoiceChip(
-                label: Text(r),
-                selected: _filter == r || (r == 'Alla' && _filter == null),
-                selectedColor: const Color(0xFFD4AF37),
-                onSelected: (_) {
-                  setState(() => _filter = r == 'Alla' ? null : r);
-                  Navigator.pop(ctx);
-                },
-              )).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
