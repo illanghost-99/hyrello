@@ -1587,11 +1587,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _lastName = TextEditingController();
   bool _loading = false;
   String? _imageUrl;
+  XFile? _pickedImage;
 
   Future<void> _pickImage() async {
-    // Placeholder - image_picker integration
-    // For full implementation, add image_picker package and upload to Supabase Storage
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bildväljare kommer i nästa uppdatering. Använd kamera eller galleri.')));
+    final picker = ImagePicker();
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: const Color(0xFF1A1A1A),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Color(0xFFD4AF37)),
+              title: const Text('Galleri', style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Color(0xFFD4AF37)),
+              title: const Text('Kamera', style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    final file = await picker.pickImage(source: source, maxWidth: 512, maxHeight: 512, imageQuality: 85);
+    if (file != null) {
+      setState(() {
+        _pickedImage = file;
+        _imageUrl = file.path;
+      });
+    }
   }
 
   Future<void> _save() async {
@@ -1626,8 +1654,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: CircleAvatar(
               radius: 50,
               backgroundColor: const Color(0xFF1A1A1A),
-              backgroundImage: _imageUrl != null ? NetworkImage(_imageUrl!) : null,
-              child: _imageUrl == null ? const Icon(Icons.camera_alt, color: Colors.white54, size: 32) : null,
+              backgroundImage: _pickedImage != null ? FileImage(File(_pickedImage!.path)) : null,
+              child: _pickedImage == null ? const Icon(Icons.camera_alt, color: Colors.white54, size: 32) : null,
             ),
           ),
           const SizedBox(height: 8),
