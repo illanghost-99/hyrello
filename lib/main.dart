@@ -1013,77 +1013,108 @@ class ExpertDetailScreen extends StatelessWidget {
   final bool verified;
   const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc, required this.rating, this.image, this.verified = false});
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
-      appBar: AppBar(
-        title: Text(name, style: const TextStyle(color: Color(0xFFD4AF37))),
-        backgroundColor: Colors.transparent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CircleAvatar(radius: 40, backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, size: 40, color: Colors.black)),
-            const SizedBox(height: 16),
-            Text(title, style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 18)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text(price, style: const TextStyle(fontSize: 16)),
-                const SizedBox(width: 12),
-                const Icon(Icons.star, color: Color(0xFFD4AF37), size: 18),
-                Text(' $rating', style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(desc, style: const TextStyle(color: Colors.white70)),
-            const SizedBox(height: 24),
-            const Text('Recensioner', style: TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            const Text('“Mycket professionell och tydlig.” — 5★', style: TextStyle(color: Colors.white70)),
-            const Text('“Snabb och trevlig hjälp.” — 4★', style: TextStyle(color: Colors.white70)),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      backgroundColor: const Color(0xFF1A1A1A),
-                      title: const Text('Samtycke', style: TextStyle(color: Color(0xFFD4AF37))),
-                      content: const Text('Jag godkänner att inte missbruka expertens kontaktuppgifter eller trakassera. Hyrello kan användas som bevis vid polisanmälan.'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Avbryt')),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: name)));
-                          },
-                          child: const Text('Godkänn & skriv'),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 280,
+            pinned: true,
+            backgroundColor: const Color(0xFF0A0A0A),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (image != null)
+                    Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: const Color(0xFF1A1A1A)))
+                  else
+                    Container(color: const Color(0xFF1A1A1A)),
+                  Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, const Color(0xFF0A0A0A)]))),
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: Row(
+                      children: [
+                        Stack(
+                          children: [
+                            CircleAvatar(radius: 36, backgroundImage: image != null ? NetworkImage(image!) : null, child: image == null ? const Icon(Icons.person, size: 36) : null),
+                            if (verified) Positioned(right: 0, bottom: 0, child: Container(padding: const EdgeInsets.all(3), decoration: const BoxDecoration(color: Color(0xFFD4AF37), shape: BoxShape.circle), child: const Icon(Icons.verified, size: 16, color: Colors.black))),
+                          ],
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(name, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                          Text(title, style: const TextStyle(color: Color(0xFFD4AF37))),
+                        ])),
                       ],
                     ),
-                  );
-                },
-                child: Text('Skriv till $name'),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
+            sliver: SliverList(delegate: SliverChildListDelegate([
+              Row(children: [
+                Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(20)), child: Text(price, style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.w600))),
+                const SizedBox(width: 12),
+                const Icon(Icons.star, color: Color(0xFFD4AF37), size: 18),
+                Text(' $rating', style: const TextStyle(color: Colors.white)),
+              ]),
+              const SizedBox(height: 20),
+              const Text('Om', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Text(desc, style: const TextStyle(color: Colors.white70, height: 1.4)),
+              const SizedBox(height: 24),
+              const Text('Recensioner', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
+              _review('“Mycket professionell och tydlig.”', '5★'),
+              _review('“Snabb och trevlig hjälp.”', '4★'),
+              const SizedBox(height: 100),
+            ])),
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black, minimumSize: const Size(double.infinity, 52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26))),
+            onPressed: () {
+              showDialog(context: context, builder: (ctx) => AlertDialog(
+                backgroundColor: const Color(0xFF1A1A1A),
+                title: const Text('Samtycke', style: TextStyle(color: Color(0xFFD4AF37))),
+                content: const Text('Jag godkänner att inte missbruka expertens kontaktuppgifter.'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Avbryt')),
+                  ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.black), onPressed: () { Navigator.pop(ctx); Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: name))); }, child: const Text('Godkänn & skriv')),
+                ],
+              ));
+            },
+            child: Text('Skriv till $name'),
+          ),
         ),
       ),
     );
   }
+
+  Widget _review(String text, String stars) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(12)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(text, style: const TextStyle(color: Colors.white70)),
+        const SizedBox(height: 4),
+        Text(stars, style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 13)),
+      ]),
+    ),
+  );
 }
-
-
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -1173,6 +1204,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           TileLayer(
             urlTemplate: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_52sh_1_1179fa3b1f0b6aa30590c6bb',
+            tileSize: 256,
             userAgentPackageName: 'se.HC.hyrello',
             maxZoom: 20,
             retinaMode: true,
@@ -1589,6 +1621,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _imageUrl;
   XFile? _pickedImage;
 
+  @override
+  void initState() {
+    super.initState();
+    final meta = Supabase.instance.client.auth.currentUser?.userMetadata;
+    _firstName.text = meta?['first_name'] ?? '';
+    _lastName.text = meta?['last_name'] ?? '';
+    final path = meta?['avatar_path'];
+    if (path != null && File(path).existsSync()) {
+      _pickedImage = XFile(path);
+    }
+  }
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final source = await showModalBottomSheet<ImageSource>(
@@ -1628,6 +1672,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await Supabase.instance.client.auth.updateUser(UserAttributes(data: {
         'first_name': _firstName.text.trim(),
         'last_name': _lastName.text.trim(),
+        if (_pickedImage != null) 'avatar_path': _pickedImage!.path,
       }));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profil uppdaterad')));
