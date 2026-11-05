@@ -805,21 +805,21 @@ class ChatScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          _chatTile(context, 'Anna Svensson', 'Hej! När kan du hjälpa mig?', '14:32', false),
-          _chatTile(context, 'Erik Lindberg', 'Tack för hjälpen!', 'Igår', true),
-          _chatTile(context, 'Sofia Holm', 'Kan vi boka tid?', 'Mån', false),
+          _chatTile(context, kExperts[0], 'Hej! När kan du hjälpa mig?', '14:32', false),
+          _chatTile(context, kExperts[1], 'Tack för hjälpen!', 'Igår', true),
+          _chatTile(context, kExperts[2], 'Kan vi boka tid?', 'Mån', false),
         ],
       ),
     );
   }
 
-  Widget _chatTile(BuildContext context, String name, String lastMsg, String time, bool read) {
+  Widget _chatTile(BuildContext context, Map<String, dynamic> e, String lastMsg, String time, bool read) {
     return ListTile(
-      leading: CircleAvatar(backgroundColor: const Color(0xFFD4AF37), child: Text(name[0], style: const TextStyle(color: Colors.black))),
-      title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+      leading: CircleAvatar(backgroundImage: NetworkImage(e['image'])),
+      title: Text(e['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       subtitle: Text(lastMsg, style: TextStyle(color: read ? Colors.white38 : Colors.white70)),
       trailing: Text(time, style: const TextStyle(color: Colors.white38, fontSize: 12)),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: name))),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailScreen(name: e['name']))),
     );
   }
 }
