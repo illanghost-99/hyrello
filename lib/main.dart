@@ -1172,9 +1172,10 @@ class _MapScreenState extends State<MapScreen> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-            subdomains: const ['a', 'b', 'c', 'd'],
+            urlTemplate: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_52sh_1_1179fa3b1f0b6aa30590c6bb',
             userAgentPackageName: 'se.HC.hyrello',
+            maxZoom: 20,
+            retinaMode: true,
           ),
           MarkerLayer(
             markers: [
