@@ -85,6 +85,16 @@ class _AuthGateState extends State<AuthGate> {
   }
 }
 
+
+// Shared dummy experts used across the app
+final List<Map<String, dynamic>> kExperts = [
+  {'name': 'Anna Jurist', 'role': 'Juridik', 'lat': 59.334, 'lng': 18.063, 'image': 'https://i.pravatar.cc/150?img=1', 'verified': true, 'price': '850 kr/tim', 'desc': 'Erfaren jurist med fokus på avtalsrätt.', 'rating': 4.9},
+  {'name': 'Erik Mäklare', 'role': 'Mäklare', 'lat': 59.329, 'lng': 18.068, 'image': 'https://i.pravatar.cc/150?img=3', 'verified': true, 'price': '650 kr/tim', 'desc': 'Lokal mäklare med 10 års erfarenhet.', 'rating': 4.7},
+  {'name': 'Lisa Frisör', 'role': 'Frisör', 'lat': 59.338, 'lng': 18.055, 'image': 'https://i.pravatar.cc/150?img=5', 'verified': false, 'price': '450 kr/tim', 'desc': 'Stylist med fokus på modern hårklippning.', 'rating': 4.8},
+  {'name': 'Johan IT', 'role': 'IT', 'lat': 59.325, 'lng': 18.072, 'image': 'https://i.pravatar.cc/150?img=8', 'verified': true, 'price': '750 kr/tim', 'desc': 'IT-konsult specialiserad på webb och appar.', 'rating': 4.6},
+  {'name': 'Sara Läkare', 'role': 'Läkare', 'lat': 59.340, 'lng': 18.050, 'image': 'https://i.pravatar.cc/150?img=9', 'verified': false, 'price': '950 kr/tim', 'desc': 'Allmänläkare med bred erfarenhet.', 'rating': 4.9},
+];
+
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
 
@@ -957,33 +967,39 @@ class HomeScreen extends StatelessWidget {
         children: [
           const Text('Dina sparade experter', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 12),
-          _expertCard(context, 'Anna Svensson', 'Advokat', '850 kr/tim', 'Erfaren jurist med fokus på avtalsrätt.', 4.9),
-          _expertCard(context, 'Erik Lindberg', 'Mäklare', '650 kr/tim', 'Lokal mäklare med 10 års erfarenhet.', 4.7),
-          _expertCard(context, 'Sofia Holm', 'Frisör', '450 kr/tim', 'Stylist med fokus på modern hårklippning.', 4.8),
+          ...kExperts.map((e) => _expertCard(context, e)),
         ],
       ),
     );
   }
 
-  Widget _expertCard(BuildContext context, String name, String title, String price, String desc, double rating) {
+  Widget _expertCard(BuildContext context, Map<String, dynamic> e) {
     return Card(
       color: const Color(0xFF1A1A1A),
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
-        leading: const CircleAvatar(backgroundColor: Color(0xFFD4AF37), child: Icon(Icons.person, color: Colors.black)),
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('$title · $price\n$desc', style: const TextStyle(color: Colors.white70)),
+        leading: CircleAvatar(
+          backgroundColor: const Color(0xFF1A1A1A),
+          backgroundImage: NetworkImage(e['image']),
+        ),
+        title: Row(children: [
+          Text(e['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+          if (e['verified'] == true) const Padding(padding: EdgeInsets.only(left: 6), child: Icon(Icons.verified, color: Color(0xFFD4AF37), size: 16)),
+        ]),
+        subtitle: Text('${e['role']} · ${e['price']}\n${e['desc']}', style: const TextStyle(color: Colors.white70)),
         isThreeLine: true,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.star, color: Color(0xFFD4AF37), size: 16),
-            Text(' $rating', style: const TextStyle(color: Colors.white70)),
+            Text(' ${e['rating']}', style: const TextStyle(color: Colors.white70)),
           ],
         ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(name: name, title: title, price: price, desc: desc, rating: rating)));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(
+            name: e['name'], title: e['role'], price: e['price'], desc: e['desc'], rating: e['rating'], image: e['image'], verified: e['verified'] == true,
+          )));
         },
       ),
     );
@@ -993,7 +1009,9 @@ class HomeScreen extends StatelessWidget {
 class ExpertDetailScreen extends StatelessWidget {
   final String name, title, price, desc;
   final double rating;
-  const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc, required this.rating});
+  final String? image;
+  final bool verified;
+  const ExpertDetailScreen({super.key, required this.name, required this.title, required this.price, required this.desc, required this.rating, this.image, this.verified = false});
 
 
   @override
@@ -1100,13 +1118,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   // Dummy experts with Stockholm-area positions
-  final List<Map<String, dynamic>> _experts = [
-    {'name': 'Anna Jurist', 'role': 'Juridik', 'lat': 59.334, 'lng': 18.063, 'image': 'https://i.pravatar.cc/150?img=1', 'verified': true},
-    {'name': 'Erik Mäklare', 'role': 'Mäklare', 'lat': 59.329, 'lng': 18.068, 'image': 'https://i.pravatar.cc/150?img=3', 'verified': true},
-    {'name': 'Lisa Frisör', 'role': 'Frisör', 'lat': 59.338, 'lng': 18.055, 'image': 'https://i.pravatar.cc/150?img=5', 'verified': false},
-    {'name': 'Johan IT', 'role': 'IT', 'lat': 59.325, 'lng': 18.072, 'image': 'https://i.pravatar.cc/150?img=8', 'verified': true},
-    {'name': 'Sara Läkare', 'role': 'Läkare', 'lat': 59.340, 'lng': 18.050, 'image': 'https://i.pravatar.cc/150?img=9', 'verified': false},
-  ];
+  final List<Map<String, dynamic>> _experts = kExperts;
 
 
   void _showFilter() {
@@ -1160,7 +1172,8 @@ class _MapScreenState extends State<MapScreen> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            subdomains: const ['a', 'b', 'c', 'd'],
             userAgentPackageName: 'se.HC.hyrello',
           ),
           MarkerLayer(
@@ -1189,9 +1202,11 @@ class _MapScreenState extends State<MapScreen> {
                       builder: (_) => ExpertDetailScreen(
                         name: e['name'],
                         title: e['role'],
-                        price: 'Från 450 kr/h',
-                        desc: 'Erfaren specialist inom ' + e['role'] + '.',
-                        rating: 4.8,
+                        price: e['price'] ?? 'Från 450 kr/h',
+                        desc: e['desc'] ?? 'Erfaren specialist.',
+                        rating: e['rating'] ?? 4.8,
+                        image: e['image'],
+                        verified: e['verified'] == true,
                       ),
                     ));
                   },
@@ -1261,11 +1276,11 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   String _filter = 'Alla';
-  final List<String> _filters = ['Alla', 'Juridik', 'Mäklare', 'Frisör'];
-
+  final List<String> _filters = ['Alla', 'Juridik', 'Mäklare', 'Frisör', 'IT', 'Läkare'];
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _filter == 'Alla' ? kExperts : kExperts.where((e) => e['role'] == _filter).toList();
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
@@ -1293,8 +1308,29 @@ class _ListScreenState extends State<ListScreen> {
               }).toList(),
             ),
           ),
-          const Expanded(
-            child: Center(child: Text('Filtrerad lista över experter', style: TextStyle(color: Colors.white70))),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filtered.length,
+              itemBuilder: (ctx, i) {
+                final e = filtered[i];
+                return Card(
+                  color: const Color(0xFF1A1A1A),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(backgroundImage: NetworkImage(e['image'])),
+                    title: Row(children: [
+                      Text(e['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      if (e['verified'] == true) const Padding(padding: EdgeInsets.only(left: 6), child: Icon(Icons.verified, color: Color(0xFFD4AF37), size: 16)),
+                    ]),
+                    subtitle: Text('${e['role']} · ${e['price']}', style: const TextStyle(color: Colors.white70)),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExpertDetailScreen(
+                      name: e['name'], title: e['role'], price: e['price'], desc: e['desc'], rating: e['rating'], image: e['image'], verified: e['verified'] == true,
+                    ))),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -1380,7 +1416,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 40),
           _profileTile(Icons.edit, 'Redigera profil', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()))),
           _profileTile(Icons.lock, 'Byt lösenord', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen()))),
-          _profileTile(Icons.image, 'Byt profilbild', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profilbild kan bytas i Redigera profil')))),
+          _profileTile(Icons.image, 'Byt profilbild', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()))),
           _profileTile(Icons.support_agent, 'Support', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen()))),
           _profileTile(Icons.description, 'Användarvillkor', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()))),
           _profileTile(Icons.privacy_tip, 'Integritetspolicy', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyScreen()))),
@@ -1549,6 +1585,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
   bool _loading = false;
+  String? _imageUrl;
+
+  Future<void> _pickImage() async {
+    // Placeholder - image_picker integration
+    // For full implementation, add image_picker package and upload to Supabase Storage
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bildväljare kommer i nästa uppdatering. Använd kamera eller galleri.')));
+  }
 
   Future<void> _save() async {
     setState(() => _loading = true);
@@ -1577,6 +1620,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(children: [
+          GestureDetector(
+            onTap: _pickImage,
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: const Color(0xFF1A1A1A),
+              backgroundImage: _imageUrl != null ? NetworkImage(_imageUrl!) : null,
+              child: _imageUrl == null ? const Icon(Icons.camera_alt, color: Colors.white54, size: 32) : null,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextButton(onPressed: _pickImage, child: const Text('Byt profilbild', style: TextStyle(color: Color(0xFFD4AF37)))),
+          const SizedBox(height: 24),
           TextField(controller: _firstName, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Förnamn')),
           const SizedBox(height: 16),
           TextField(controller: _lastName, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Efternamn')),
